@@ -31,7 +31,7 @@ export default async function PostPage({ params }: Props) {
       <article className="flex flex-col gap-4">
         <header className="flex flex-col gap-2">
           <h1 className="font-bold text-4xl">{post.title}</h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-gray-500 text-sm">
             {post.category} · {post.readingTime} min read ·{' '}
             {post.publishedAt.toLocaleDateString()}
           </p>
