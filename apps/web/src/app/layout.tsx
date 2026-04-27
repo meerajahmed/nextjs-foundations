@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: process.env.NEXT_PUBLIC_APP_NAME || "Vercel Academy Foundation - Web",
-  description: "VAF Web",
+  title: process.env.NEXT_PUBLIC_APP_NAME || "Next.js Foundations",
+  description: "Learning Next.js patterns",
 };
 
 export default function RootLayout({
@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="container mx-auto px-4 py-8">
+      <body className="min-h-screen bg-white text-gray-900">
         {children}
         {/* TODO: Convert to next/script (Section 4 Lesson 3) */}
         <script
