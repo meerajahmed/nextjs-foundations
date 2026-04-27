@@ -16,3 +16,20 @@ export function getUserFromDB(userId: string) {
         createdAt: new Date().toISOString(),
     };
 }
+
+// Mock database for posts
+export const db = {
+    post: {
+        async create({ data }: { data: { title: string; content: string } }) {
+            // Simulate network delay
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            return {
+                id: Math.random().toString(36).substring(7),
+                title: data.title,
+                content: data.content,
+                slug: data.title.toLowerCase().replace(/\\s+/g, '-'),
+                createdAt: new Date(),
+            };
+        },
+    },
+};
