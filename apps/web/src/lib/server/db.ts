@@ -17,7 +17,7 @@ export function getUserFromDB(userId: string) {
     };
 }
 
-// Mock database for posts
+// Mock database for posts and products
 export const db = {
     post: {
         async create({ data }: { data: { title: string; content: string } }) {
@@ -27,8 +27,23 @@ export const db = {
                 id: Math.random().toString(36).substring(7),
                 title: data.title,
                 content: data.content,
-                slug: data.title.toLowerCase().replace(/\\s+/g, '-'),
+                slug: data.title.toLowerCase().replace(/\s+/g, '-'),
                 createdAt: new Date(),
+            };
+        },
+    },
+    products: {
+        async update({ where, data }: { where: { id: string }; data: { name?: string; price?: number } }) {
+            // Simulate network delay
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            
+            // biome-ignore lint/suspicious/noConsole: Demo logging for development
+            console.log(`Updating product ${where.id}:`, data);
+            
+            return {
+                id: where.id,
+                ...data,
+                updatedAt: new Date(),
             };
         },
     },
