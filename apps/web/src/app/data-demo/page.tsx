@@ -1,7 +1,8 @@
+import { Suspense } from "react";
 import { fetchPosts, fetchStats, fetchUser } from "./data";
  
-// Parallel fetch with timing measurement
-async function fetchParallel() {
+// Async component that fetches all data in parallel
+async function DataContent() {
   const startTime = performance.now();
  
   // Promise.all runs all fetches simultaneously
@@ -15,18 +16,8 @@ async function fetchParallel() {
   const endTime = performance.now();
   const duration = Math.round(endTime - startTime);
  
-  return { user, posts, stats, duration };
-}
- 
-export default async function DataDemoPage() {
-  const { user, posts, stats, duration } = await fetchParallel();
- 
   return (
-    <main className="mx-auto max-w-2xl p-8">
-      <h1 className="mb-6 font-bold text-3xl">
-        Data Fetching Without Waterfalls
-      </h1>
- 
+    <>
       {/* Performance result banner */}
       <div className="mb-6 rounded-lg border-2 border-green-200 bg-green-50 p-4">
         <h2 className="font-semibold text-green-800">Performance Result</h2>
@@ -65,6 +56,40 @@ export default async function DataDemoPage() {
           <p>Likes: {stats.likes.toLocaleString()}</p>
         </div>
       </div>
+    </>
+  );
+}
+ 
+function DataContentSkeleton() {
+  return (
+    <>
+      <div className="mb-6 rounded-lg border-2 border-gray-200 bg-gray-50 p-4 animate-pulse">
+        <div className="h-5 w-40 rounded bg-gray-200" />
+        <div className="mt-2 h-4 w-56 rounded bg-gray-200" />
+        <div className="mt-2 h-3 w-72 rounded bg-gray-200" />
+      </div>
+      <div className="space-y-6">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="rounded-lg border p-4 animate-pulse">
+            <div className="mb-2 h-5 w-36 rounded bg-gray-200" />
+            <div className="h-4 w-48 rounded bg-gray-200" />
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+ 
+export default function DataDemoPage() {
+  return (
+    <main className="mx-auto max-w-2xl p-8">
+      <h1 className="mb-6 font-bold text-3xl">
+        Data Fetching Without Waterfalls
+      </h1>
+ 
+      <Suspense fallback={<DataContentSkeleton />}>
+        <DataContent />
+      </Suspense>
  
       {/* Code comparison */}
       <div className="mt-8 rounded bg-gray-100 p-4">

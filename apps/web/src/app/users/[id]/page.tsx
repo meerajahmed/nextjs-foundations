@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { redirect, notFound } from "next/navigation";
  
 async function fetchUser(id: string) {
@@ -10,7 +11,7 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
  
-export default async function UserPage({ params }: PageProps) {
+async function UserContent({ params }: PageProps) {
   const { id } = await params;
   const user = await fetchUser(id);
  
@@ -19,15 +20,20 @@ export default async function UserPage({ params }: PageProps) {
     redirect("/login");
   }
  
-  // Alternative: show 404 for missing resources
-  // if (!user) {
-  //   notFound();
-  // }
- 
   return (
-    <main className="mx-auto max-w-2xl p-8">
+    <>
       <h1 className="mb-4 font-bold text-2xl">{user.name}</h1>
       <p>{user.email}</p>
+    </>
+  );
+}
+ 
+export default function UserPage({ params }: PageProps) {
+  return (
+    <main className="mx-auto max-w-2xl p-8">
+      <Suspense fallback={<div className="animate-pulse">Loading user...</div>}>
+        <UserContent params={params} />
+      </Suspense>
     </main>
   );
 }

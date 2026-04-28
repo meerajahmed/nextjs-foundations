@@ -1,22 +1,40 @@
-'use server'
+"use server"
  
-import { db } from '@/lib/server/db'
 import { revalidateTag } from 'next/cache'
+import { db } from '@/lib/server/db'
  
-export async function updateProduct(formData: FormData) {
-  const id = formData.get('id') as string
-  const name = formData.get('name') as string
-  const price = formData.get('price') as string
+export async function updateProduct(
+  id: string, 
+  data: { name?: string; price?: number; inventory?: number }
+) {
+  try {
+    // Update in database
+    await db.products.update({
+      where: { id },
+      data,
+    })
+    
+    // Invalidate specific product and product list (16.1.x requires second arg)
+    revalidateTag(`product-${id}`, 'max')
+    revalidateTag('products', 'max')
+    
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to update product:', error)
+    return { success: false, error: 'Failed to update product' }
+  }
+}
  
-  // 1. Mutate data
-  await db.products.update({
-    where: { id },
-    data: { name, price: parseFloat(price) }
-  })
- 
-  // 2. Invalidate cache (Next.js 16.1.x requires second argument)
-  revalidateTag(`product-${id}`, 'max')  // Specific product
-  revalidateTag('products', 'max')        // Product list
- 
-  return { success: true }
+export async function deleteProduct(id: string) {
+  try {
+    await db.products.delete({ where: { id } })
+    
+    // Only invalidate product list, specific product cache will expire naturally
+    revalidateTag('products', 'max')
+    
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to delete product:', error)
+    return { success: false, error: 'Failed to delete product' }
+  }
 }

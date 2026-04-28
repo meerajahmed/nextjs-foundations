@@ -1,5 +1,7 @@
 // Server Component - renders server content inside the dialog
  
+import { Suspense } from 'react'
+import { connection } from 'next/server'
 import { Button } from '@repo/ui/components/button'
 import {
   DialogClose,
@@ -12,18 +14,42 @@ import {
   DialogTrigger,
 } from '@repo/ui/components/dialog'
  
-// Simulated server data
-async function getTermsContent(): Promise<string> {
-  // This would fetch from a CMS or database in a real app
-  return `By using this service, you agree to our terms. These terms were
+// Async component that accesses request-time data
+async function ServerTermsDialog() {
+  await connection() // Required before using new Date() in Server Components
+  const termsContent = `By using this service, you agree to our terms. These terms were
   last updated on ${new Date().toLocaleDateString()}. Server-rendered content
   can be passed as children to client components.`
+ 
+  return (
+    <DialogRoot>
+      <DialogTrigger asChild>
+        <Button type="button" variant="outline">
+          View Terms
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Terms of Service</DialogTitle>
+          <DialogDescription>
+            Please read these terms carefully.
+          </DialogDescription>
+        </DialogHeader>
+        {/* Server-rendered content passed through */}
+        <div className="rounded-md bg-muted p-4 text-sm">
+          {termsContent}
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button">I Understand</Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </DialogRoot>
+  )
 }
  
-export default async function DialogDemoPage() {
-  // Fetch content on the server
-  const termsContent = await getTermsContent()
- 
+export default function DialogDemoPage() {
   return (
     <main className="flex flex-col gap-8 p-8">
       <div>
@@ -75,30 +101,15 @@ export default async function DialogDemoPage() {
           Terms content fetched on server, rendered inside client dialog.
         </p>
  
-        <DialogRoot>
-          <DialogTrigger asChild>
-            <Button type="button" variant="outline">
-              View Terms
+        <Suspense
+          fallback={
+            <Button type="button" variant="outline" disabled>
+              Loading terms...
             </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Terms of Service</DialogTitle>
-              <DialogDescription>
-                Please read these terms carefully.
-              </DialogDescription>
-            </DialogHeader>
-            {/* Server-rendered content passed through */}
-            <div className="rounded-md bg-muted p-4 text-sm">
-              {termsContent}
-            </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="button">I Understand</Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </DialogRoot>
+          }
+        >
+          <ServerTermsDialog />
+        </Suspense>
       </section>
  
       {/* A11y notes */}

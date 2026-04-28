@@ -1,18 +1,28 @@
 // No 'use client' - this is a Server Component by default
 // Data fetching and heavy logic stays here on the server
  
+import { Suspense } from 'react'
+import { connection } from 'next/server'
 import { Counter } from '@/components/counter'
  
-// Simulated server-side data
-async function getServerTimestamp(): Promise<string> {
-  // This runs ONLY on the server
-  return new Date().toISOString()
+// Async component that accesses request-time data
+async function ServerTimestamp() {
+  await connection() // Required before using new Date() in Server Components
+  const serverTimestamp = new Date().toISOString()
+  return (
+    <section className="rounded-lg border bg-muted/50 p-6">
+      <h2 className="font-semibold text-lg">Server-Rendered Content</h2>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Generated at: <code className="font-mono text-xs">{serverTimestamp}</code>
+      </p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        This content ships as HTML with zero JavaScript.
+      </p>
+    </section>
+  )
 }
  
-export default async function CounterDemoPage() {
-  // Server-side data fetching (no JS shipped for this)
-  const serverTimestamp = await getServerTimestamp()
- 
+export default function CounterDemoPage() {
   return (
     <main className="flex flex-col gap-8 p-8">
       <div>
@@ -23,15 +33,16 @@ export default async function CounterDemoPage() {
       </div>
  
       {/* Server-rendered content (no JS) */}
-      <section className="rounded-lg border bg-muted/50 p-6">
-        <h2 className="font-semibold text-lg">Server-Rendered Content</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Generated at: <code className="font-mono text-xs">{serverTimestamp}</code>
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          This content ships as HTML with zero JavaScript.
-        </p>
-      </section>
+      <Suspense
+        fallback={
+          <section className="rounded-lg border bg-muted/50 p-6 animate-pulse">
+            <h2 className="font-semibold text-lg">Server-Rendered Content</h2>
+            <p className="mt-2 text-sm text-muted-foreground">Loading timestamp...</p>
+          </section>
+        }
+      >
+        <ServerTimestamp />
+      </Suspense>
  
       {/* Client Component - interactive widget */}
       <section className="rounded-lg border bg-muted/50 p-6">
@@ -57,4 +68,5 @@ export default async function CounterDemoPage() {
     </main>
   )
 }
+
 

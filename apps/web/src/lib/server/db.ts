@@ -1,7 +1,9 @@
 import "server-only";
+import { connection } from "next/server";
 
 // Simulate a database call that uses server secrets
-export function getUserFromDB(userId: string) {
+export async function getUserFromDB(userId: string) {
+    await connection();
     // In real code, this would use process.env.DATABASE_URL
     // The INTERNAL_CONFIG demonstrates server-only variable access
     const config = process.env.INTERNAL_CONFIG ?? "default";
@@ -44,6 +46,18 @@ export const db = {
                 id: where.id,
                 ...data,
                 updatedAt: new Date(),
+            };
+        },
+        async delete({ where }: { where: { id: string } }) {
+            // Simulate network delay
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            
+            // biome-ignore lint/suspicious/noConsole: Demo logging for development
+            console.log(`Deleting product ${where.id}`);
+            
+            return {
+                id: where.id,
+                deletedAt: new Date(),
             };
         },
     },
