@@ -19,6 +19,15 @@ const config: NextConfig = {
       expire: 600, // 10 minutes
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      },
+    ],
+    formats: ['image/avif', 'image/webp'],
+  },
 }
  
 export default config
