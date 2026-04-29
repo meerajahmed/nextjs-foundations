@@ -1,5 +1,5 @@
 import Image from 'next/image'
- 
+
 const images = [
   { src: 'https://picsum.photos/800/600?random=1', alt: 'Mountain landscape' },
   { src: 'https://picsum.photos/800/600?random=2', alt: 'Ocean sunset' },
@@ -7,7 +7,7 @@ const images = [
   { src: 'https://picsum.photos/800/600?random=4', alt: 'City skyline' },
 ]
  
-export default function GalleryPage() {
+export default async function GalleryPage() {
   return (
     <main className="mx-auto max-w-4xl p-8">
       <h1 className="mb-8 font-bold text-3xl">Photo Gallery</h1>

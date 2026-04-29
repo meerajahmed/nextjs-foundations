@@ -1,6 +1,22 @@
-import type { Metadata } from "next";
-
-import "./globals.css";
+import type { Metadata } from 'next'
+import { Inter, JetBrains_Mono } from 'next/font/google'
+ 
+import './globals.css'
+ 
+// Variable font - all weights in single file
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+  adjustFontFallback: true,
+})
+ 
+// Monospace font for code blocks
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: process.env.NEXT_PUBLIC_APP_NAME || "Next.js Foundations",
@@ -13,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} >
       <body className="min-h-screen bg-white text-gray-900">
         {children}
         {/* TODO: Convert to next/script (Section 4 Lesson 3) */}
